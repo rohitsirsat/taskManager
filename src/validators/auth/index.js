@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { AvailableUserRoles } from "../../utils/constants.js";
 
 const userRegistrationValidator = () => {
   return [
@@ -12,11 +13,20 @@ const userRegistrationValidator = () => {
     body("username")
       .trim()
       .notEmpty()
-      .withMessage("username is required")
+      .withMessage("Username is required")
+      .isLowercase()
+      .withMessage("Username must be lowercase")
       .isLength({ min: 3 })
-      .withMessage("username should be at least 3 char")
+      .withMessage("Username must be at lease 3 characters long")
       .isLength({ max: 10 })
-      .withMessage("username connot exceed 13 char"),
+      .withMessage("Username connot exceed 13 char"),
+
+    body("password").trim().notEmpty().withMessage("Password is required"),
+
+    body("role")
+      .optional()
+      .isIn(AvailableUserRoles)
+      .withMessage("Invalid user role"),
   ];
 };
 
