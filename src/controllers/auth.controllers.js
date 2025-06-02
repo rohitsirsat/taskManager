@@ -21,6 +21,7 @@ const generateAccessTokenAndRefreshTokens = async (userId) => {
     throw new ApiError(500, "Something went wrong while generating the tokens");
   }
 };
+
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
 
@@ -59,9 +60,6 @@ const registerUser = asyncHandler(async (req, res) => {
     ),
   });
 
-  const { accessToken, refreshToken } =
-    await generateAccessTokenAndRefreshTokens(user._id);
-
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",
   );
@@ -70,34 +68,86 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  const cookieOptions = {
-    httpOnly: true, // Set to false for testing
-    secure: true, // Set to false for local development
-  };
-
   return res
     .status(201)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
       new ApiResponse(
         200,
-        { user: createdUser, accessToken, refreshToken },
+        { user: createdUser },
         "User Registered Successfully",
       ),
     );
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  const { email, username, password } = req.body;
 
-  //validation
+  if (!username && !email) {
+    throw new ApiError(400, "Username or email is required");
+  }
+
+  const user = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid user credentials");
+  }
+
+  const { refreshToken, accessToken } =
+    await generateAccessTokenAndRefreshTokens(user._id);
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshTokne -emailVerificationToken  -emailVerificationTokenExpiry",
+  );
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .json(
+      new ApiResponse(
+        200,
+        { user: loggedInUser, accessToken, refreshToken },
+        "User logged in successfulluy",
+      ),
+    );
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: "",
+      },
+    },
+    {
+      new: true,
+    },
+  );
 
-  //validation
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User logged our"));
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
