@@ -13,6 +13,7 @@ import { validate } from "../middlewares/validator.middleware.js";
 import {
   userRegistrationValidator,
   userLoginValidator,
+  userForgottenPasswordValidator,
 } from "../validators/auth/index.js";
 import { authCheck } from "../middlewares/auth.middleware.js";
 
@@ -31,7 +32,9 @@ router
   .post(authCheck, resendEmailVerification);
 
 router.route("/forgot-password").post(authCheck, forgotPasswordRequest);
-router.route("/reset-password/:resetToken").post(resetForgottenPassword);
+router
+  .route("/reset-password/:resetToken")
+  .post(userForgottenPasswordValidator(), resetForgottenPassword);
 
 router.route("/current-user").get(authCheck, getCurrentUser);
 

@@ -38,4 +38,14 @@ const userLoginValidator = () => {
   ];
 };
 
-export { userRegistrationValidator, userLoginValidator };
+const userForgottenPasswordValidator = () => {
+  return [
+    body("newPassword").trim().notEmpty().withMessage("Password is required"),
+  ];
+};
+
+export {
+  userRegistrationValidator,
+  userLoginValidator,
+  userForgottenPasswordValidator,
+};
