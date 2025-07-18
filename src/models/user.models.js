@@ -61,7 +61,7 @@ const userSchema = new Schema(
     emailVerificationToken: {
       type: String,
     },
-    emailVerificationTokenExpiry: {
+    emailVerificationExpiry: {
       type: Date,
     },
   },
@@ -104,7 +104,7 @@ userSchema.methods.generateTemporaryToken = function () {
   const hashedToken = crypto
     .createHash("sha256")
     .update(unHashedToken)
-    .digest("hax");
+    .digest("hex");
 
   const tokenExpiry = Date.now() + 20 * 60 * 1000; // 20 minutes
 
