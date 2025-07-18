@@ -299,19 +299,40 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-  const { email, username, password, role } = req.body;
+  const { oldPassword, newPassword } = req.body;
 
-  //validation
+  const user = await User.findById(req.user._id);
+
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordValid) {
+    throw new ApiError(400, "Invalid Password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password change successfully"));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+  /**
+  * @description by sending user this way it goes with refreshToken
+  * 
+  *  const user = await User.findById(req.user._id);
 
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
 
   return res.status(200).json(new ApiResponse(200, { user }, "User found"));
+  */
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
 export {
@@ -326,7 +347,3 @@ export {
   resetForgottenPassword,
   verifyEmail,
 };
-
-// ddaebd49415652a25b8576b37a98c520b64815ce
-
-// ddaebd49415652a25b8576b37a98c520b64815ce

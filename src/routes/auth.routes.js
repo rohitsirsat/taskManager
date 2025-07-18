@@ -8,12 +8,14 @@ import {
   getCurrentUser,
   forgotPasswordRequest,
   resetForgottenPassword,
+  changeCurrentPassword,
 } from "../controllers/auth.controllers.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
   userRegistrationValidator,
   userLoginValidator,
   userForgottenPasswordValidator,
+  userChangeCurrentPasswordValidator,
 } from "../validators/auth/index.js";
 import { authCheck } from "../middlewares/auth.middleware.js";
 
@@ -35,6 +37,10 @@ router.route("/forgot-password").post(authCheck, forgotPasswordRequest);
 router
   .route("/reset-password/:resetToken")
   .post(userForgottenPasswordValidator(), resetForgottenPassword);
+
+router
+  .route("/change-password")
+  .post(authCheck, userChangeCurrentPasswordValidator(), changeCurrentPassword);
 
 router.route("/current-user").get(authCheck, getCurrentUser);
 

@@ -44,8 +44,19 @@ const userForgottenPasswordValidator = () => {
   ];
 };
 
+const userChangeCurrentPasswordValidator = () => {
+  return [
+    body("oldPassword")
+      .trim()
+      .notEmpty()
+      .withMessage("oldPassword is required"),
+    body("newPassword").trim().notEmpty().withMessage("Password is required"),
+  ];
+};
+
 export {
   userRegistrationValidator,
   userLoginValidator,
   userForgottenPasswordValidator,
+  userChangeCurrentPasswordValidator,
 };
