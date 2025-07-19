@@ -70,7 +70,7 @@ const registerUser = asyncHandler(async (req, res) => {
     await generateAccessTokenAndRefreshTokens(user._id);
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",
+    "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
   );
 
   if (!createdUser) {
@@ -120,7 +120,7 @@ const loginUser = asyncHandler(async (req, res) => {
     await generateAccessTokenAndRefreshTokens(user._id);
 
   const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshTokne -emailVerificationToken  -emailVerificationTokenExpiry",
+    "-password -refreshTokne -emailVerificationToken  -emailVerificationExpiry",
   );
 
   const cookieOptions = {
@@ -163,7 +163,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions)
-    .json(new ApiResponse(200, {}, "User logged our"));
+    .json(new ApiResponse(200, {}, "User logged out"));
 });
 
 const verifyEmail = asyncHandler(async (req, res) => {
@@ -396,4 +396,5 @@ export {
   resendEmailVerification,
   resetForgottenPassword,
   verifyEmail,
+  generateAccessTokenAndRefreshTokens,
 };
