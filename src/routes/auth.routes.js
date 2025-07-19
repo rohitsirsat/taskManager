@@ -9,6 +9,7 @@ import {
   forgotPasswordRequest,
   resetForgottenPassword,
   changeCurrentPassword,
+  refreshAccessToken,
 } from "../controllers/auth.controllers.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
@@ -26,6 +27,8 @@ router
   .post(userRegistrationValidator(), validate, registerUser);
 
 router.route("/login").post(userLoginValidator(), validate, loginUser);
+
+router.route("/refresh-token").post(refreshAccessToken);
 
 router.route("/verify-email/:verificationToken").get(verifyEmail);
 
