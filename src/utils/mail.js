@@ -18,7 +18,7 @@ const sendEmail = async (options) => {
   });
 
   // Generate the plaintext version of the e-mail (for clients that do not support HTML)
-  const emailTextual = mailGenerator.generate(options.mailgenContent);
+  const emailTextual = mailGenerator.generatePlaintext(options.mailgenContent);
 
   // Generate an HTML email with the provided constents
   const emailHtml = mailGenerator.generate(options.mailgenContent);
