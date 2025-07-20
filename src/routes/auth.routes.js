@@ -39,11 +39,16 @@ router
 router.route("/forgot-password").post(authCheck, forgotPasswordRequest);
 router
   .route("/reset-password/:resetToken")
-  .post(userForgottenPasswordValidator(), resetForgottenPassword);
+  .post(userForgottenPasswordValidator(), validate, resetForgottenPassword);
 
 router
   .route("/change-password")
-  .post(authCheck, userChangeCurrentPasswordValidator(), changeCurrentPassword);
+  .post(
+    authCheck,
+    userChangeCurrentPasswordValidator(),
+    validate,
+    changeCurrentPassword,
+  );
 
 router.route("/current-user").get(authCheck, getCurrentUser);
 
