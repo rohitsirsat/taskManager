@@ -3,6 +3,8 @@ import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async.handler.js";
 import { generateAccessTokenAndRefreshTokens } from "../controllers/auth.controllers.js";
+import { ProjectMember } from "../models/projecMember.models.js";
+import mongoose from "mongoose";
 
 export const authCheck = asyncHandler(async (req, res, next) => {
   const accessToken =
@@ -78,3 +80,33 @@ export const authCheck = asyncHandler(async (req, res, next) => {
     }
   }
 });
+
+export const validateProjectPermission = (roles = []) =>
+  asyncHandler(async (req, res, next) => {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+      throw new ApiError(401, "Invalid project id");
+    }
+
+    const project = await ProjectMember.findOne({
+      project: mongoose.Types.ObjectId(projectId),
+      user: mongoose.Types.ObjectId(req.user._id),
+    });
+
+    console.log("IN AUTH.Midd: Project: ", project);
+
+    if (!project) {
+      throw new ApiError(403, "Project not found");
+    }
+
+    const givenRole = project?.role;
+
+    req.user.role = givenRole;
+
+    if (!roles.includes(givenRole)) {
+      throw new ApiError(403, "You are not allow to perform this action");
+    }
+
+    next();
+  });
