@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 import { UserRolesEnum } from "../utils/constants.js";
 import { User } from "./user.models.js";
 
@@ -30,5 +31,7 @@ projectSchema.pre("save", async function (next) {
 
   next();
 });
+
+projectSchema.plugin(mongooseAggregatePaginate);
 
 export const Project = mongoose.model("Project", projectSchema);
