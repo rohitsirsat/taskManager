@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/async.handler.js";
 import { generateAccessTokenAndRefreshTokens } from "../controllers/auth.controllers.js";
 import { ProjectMember } from "../models/projecMember.models.js";
 import mongoose from "mongoose";
+import { Project } from "../models/project.models.js";
 
 export const authCheck = asyncHandler(async (req, res, next) => {
   const accessToken =
@@ -90,11 +91,9 @@ export const validateProjectPermission = (roles = []) =>
     }
 
     const project = await ProjectMember.findOne({
-      project: mongoose.Types.ObjectId(projectId),
-      user: mongoose.Types.ObjectId(req.user._id),
+      project: new mongoose.Types.ObjectId(projectId),
+      user: new mongoose.Types.ObjectId(req.user._id),
     });
-
-    console.log("IN AUTH.Midd: Project: ", project);
 
     if (!project) {
       throw new ApiError(403, "Project not found");
