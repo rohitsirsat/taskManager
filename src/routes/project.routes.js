@@ -10,27 +10,47 @@ import {
   updateMemberRole,
   updateProject,
 } from "../controllers/project.controllers.js";
-
 import { validateProjectPermission } from "../middlewares/auth.middleware.js";
 import { authCheck } from "../middlewares/auth.middleware.js";
-
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+import {
+  addMemberToProjectValidator,
+  createProjectValidator,
+  deleteProjectValidator,
+  updateMemberRoleValidator,
+  updateProjectValidator,
+  getProjectByIdValidator,
+} from "../validators/projects/projects.validators.js";
+import { validate } from "../middlewares/validator.middleware.js";
 
 const router = Router();
 
-router.route("/").get(authCheck, getAllProjects).post(authCheck, createProject);
+router
+  .route("/")
+  .get(authCheck, getAllProjects)
+  .post(authCheck, createProjectValidator(), validate, createProject);
 
 router
   .route("/:projectId")
-  .get(authCheck, validateProjectPermission(AvailableUserRoles), getProjectById)
+  .get(
+    authCheck,
+    validateProjectPermission(AvailableUserRoles),
+    getProjectByIdValidator(),
+    validate,
+    getProjectById,
+  )
   .put(
     authCheck,
     validateProjectPermission([UserRolesEnum.ADMIN]),
+    updateProjectValidator(),
+    validate,
     updateProject,
   )
   .delete(
     authCheck,
     validateProjectPermission([UserRolesEnum.ADMIN]),
+    deleteProjectValidator(),
+    validate,
     deleteProject,
   );
 
@@ -44,6 +64,8 @@ router
   .post(
     authCheck,
     validateProjectPermission([UserRolesEnum.ADMIN]),
+    addMemberToProjectValidator(),
+    validate,
     addMemberToProject,
   );
 
@@ -57,6 +79,8 @@ router
   .put(
     authCheck,
     validateProjectPermission([UserRolesEnum.ADMIN]),
+    updateMemberRoleValidator(),
+    validate,
     updateMemberRole,
   );
 
