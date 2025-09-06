@@ -15,7 +15,7 @@ import { validate } from "../middlewares/validator.middleware.js";
 import {
   userRegistrationValidator,
   userLoginValidator,
-  userForgottenPasswordValidator,
+  userForgotPasswordValidator,
   userChangeCurrentPasswordValidator,
   userRestForgottenPasswordValidator,
 } from "../validators/auth/auth.validators.js";
@@ -39,7 +39,7 @@ router
 
 router
   .route("/forgot-password")
-  .post(userForgottenPasswordValidator(), forgotPasswordRequest);
+  .post(userForgotPasswordValidator(), validate, forgotPasswordRequest);
 router
   .route("/reset-password/:resetToken")
   .post(userRestForgottenPasswordValidator(), validate, resetForgottenPassword);
