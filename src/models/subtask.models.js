@@ -25,4 +25,4 @@ const subtaskSchema = new Schema(
   { timestamps: true },
 );
 
-export const SubTask = mongoose.model("ProjectNote", subtaskSchema);
+export const SubTask = mongoose.model("SubTask", subtaskSchema);
