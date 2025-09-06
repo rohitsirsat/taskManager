@@ -17,7 +17,8 @@ import {
   userLoginValidator,
   userForgottenPasswordValidator,
   userChangeCurrentPasswordValidator,
-} from "../validators/auth/index.js";
+  userRestForgottenPasswordValidator,
+} from "../validators/auth/auth.validators.js";
 import { authCheck } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -36,10 +37,12 @@ router
   .route("/resend-email-verification")
   .post(authCheck, resendEmailVerification);
 
-router.route("/forgot-password").post(authCheck, forgotPasswordRequest);
+router
+  .route("/forgot-password")
+  .post(userForgottenPasswordValidator(), forgotPasswordRequest);
 router
   .route("/reset-password/:resetToken")
-  .post(userForgottenPasswordValidator(), validate, resetForgottenPassword);
+  .post(userRestForgottenPasswordValidator(), validate, resetForgottenPassword);
 
 router
   .route("/change-password")
