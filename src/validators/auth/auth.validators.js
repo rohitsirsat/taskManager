@@ -16,12 +16,17 @@ const userRegistrationValidator = () => {
       .withMessage("Username is required")
       .isLowercase()
       .withMessage("Username must be lowercase")
-      .isLength({ min: 3 })
-      .withMessage("Username must be at lease 3 characters long")
-      .isLength({ max: 10 })
-      .withMessage("Username connot exceed 13 char"),
+      .isLength({ min: 3, max: 13 })
+      .withMessage("Username must be between 3 and 13 characters long"),
 
-    body("password").trim().notEmpty().withMessage("Password is required"),
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/)
+      .withMessage("Password must include uppercase, lowercase, and number"),
 
     body("role")
       .optional()
@@ -32,15 +37,19 @@ const userRegistrationValidator = () => {
 
 const userLoginValidator = () => {
   return [
-    body("email").optional().isEmail().withMessage("Email is invalid"),
-    body("username").optional(),
+    body("email").trim().optional().isEmail().withMessage("Email is invalid"),
+    body("username").trim().optional(),
     body("password").notEmpty().withMessage("Password is required"),
   ];
 };
 
-const userForgottenPasswordValidator = () => {
+const userForgotPasswordValidator = () => {
   return [
-    body("newPassword").trim().notEmpty().withMessage("Password is required"),
+    body("email")
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Email is invalid"),
   ];
 };
 
@@ -50,20 +59,34 @@ const userChangeCurrentPasswordValidator = () => {
       .trim()
       .notEmpty()
       .withMessage("oldPassword is required"),
-    body("newPassword").trim().notEmpty().withMessage("Password is required"),
+    body("newPassword")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/)
+      .withMessage("Password must include uppercase, lowercase, and number"),
   ];
 };
 
 const userRestForgottenPasswordValidator = () => {
   return [
-    body("newPassword").trim().notEmpty().withMessage("Password is required"),
+    body("newPassword")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required")
+      .isLength({ min: 8 })
+      .withMessage("Password must be at least 8 characters long")
+      .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/)
+      .withMessage("Password must include uppercase, lowercase, and number"),
   ];
 };
 
 export {
   userRegistrationValidator,
   userLoginValidator,
-  userForgottenPasswordValidator,
+  userForgotPasswordValidator,
   userChangeCurrentPasswordValidator,
   userRestForgottenPasswordValidator,
 };
