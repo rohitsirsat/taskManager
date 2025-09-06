@@ -13,7 +13,7 @@ import {
   updateNoteValidator,
   getAllNotesValidator,
   getNoteByIdValidator,
-  deleteNoteByIdValidatorr,
+  deleteNoteByIdValidator,
 } from "../validators/notes/note.validators.js";
 
 import { validate } from "../middlewares/validator.middleware.js";
@@ -51,7 +51,7 @@ router
   )
   .delete(
     validateProjectPermission([UserRolesEnum.ADMIN]),
-    deleteNoteByIdValidatorr(),
+    deleteNoteByIdValidator(),
     validate,
     deleteNote,
   );
