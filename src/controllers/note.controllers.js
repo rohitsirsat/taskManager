@@ -67,7 +67,7 @@ const createNote = asyncHandler(async (req, res) => {
 });
 
 const updateNote = asyncHandler(async (req, res) => {
-  const { noteId } = req.params;
+  const { projectId, noteId } = req.params;
   const { content } = req.body;
 
   const existingNote = await ProjectNote.findById(noteId);
