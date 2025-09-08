@@ -301,8 +301,6 @@ const addMemberToProject = asyncHandler(async (req, res) => {
 const deleteMember = asyncHandler(async (req, res) => {
   const { projectId, userId } = req.params;
 
-  console.log(projectId, userId);
-
   const deletedProjectMember = await ProjectMember.findOneAndDelete({
     user: userId,
     project: projectId,
