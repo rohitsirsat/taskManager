@@ -250,7 +250,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
       },
     },
     {
-      $unwind: "$projectmemberDetails", // Unwind the array to get a single object
+      $unwind: "$projectmemberDetails",
     },
   ]);
 
