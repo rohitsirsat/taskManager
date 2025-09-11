@@ -3,7 +3,8 @@ import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async.handler.js";
 import { Task } from "../models/task.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
+import { SubTask } from "../models/subtask.models.js";
 
 const taskCommonAggregation = (req) => {
   return [
@@ -236,18 +237,75 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 // create subtask
 const createSubTask = asyncHandler(async (req, res) => {
-  // const {title, }
+  const { taskId } = req.params;
+  const { title } = req.body;
+
+  if (!taskId) {
+    throw new ApiError(400, "Task id required");
+  }
+
+  if (!title) {
+    throw new ApiError(400, "title id required");
+  }
+
+  const createsubTask = await SubTask.create({
+    title,
+    task: new mongoose.Types.ObjectId(taskId),
+    createdBy: new mongoose.Types.ObjectId(req.user._id),
+  });
+
+  if (!createsubTask) {
+    throw new ApiError(500, "somethig went wrong");
+  }
+
+  const createdSubTask = await SubTask.findById(createsubTask._id);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, createdSubTask, "sub task fetch successfully"));
 });
 
-// update subtask
-const updateSubTask = async (req, res) => {
-  // update subtask
-};
+const toggleSubTaskDoneStatus = asyncHandler(async (req, res) => {
+  const { subTaskId } = req.params;
+
+  if (!subTaskId) {
+    throw new ApiError(400, "Id is required");
+  }
+
+  const subTask = await SubTask.findById(subTaskId);
+
+  if (!subTask) {
+    throw new ApiError(404, "sub task does not exist");
+  }
+
+  subTask.isCompleted = !subTask.isCompleted;
+  await subTask.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        subTask,
+        `sub task marked ${subTask.isCompleted ? "done" : "undone"}`,
+      ),
+    );
+});
 
 // delete subtask
-const deleteSubTask = async (req, res) => {
-  // delete subtask
-};
+const deleteSubTask = asyncHandler(async (req, res) => {
+  const { subTaskId } = req.params;
+
+  const subtask = await SubTask.findByIdAndDelete(subTaskId);
+
+  if (!subtask) {
+    throw new ApiError(404, "sub task does not exist");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { deletedSubTask: subtask }));
+});
 
 export {
   createSubTask,
@@ -256,6 +314,6 @@ export {
   deleteTask,
   getTaskById,
   getTasks,
-  updateSubTask,
   updateTask,
+  toggleSubTaskDoneStatus,
 };
