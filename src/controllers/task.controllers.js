@@ -34,7 +34,7 @@ const taskCommonAggregation = (req) => {
 };
 
 // get all tasks
-const getTasks = asyncHandler(async (req, res) => {
+const getAllTasks = asyncHandler(async (req, res) => {
   const { taskId, projectId } = req.params;
 
   if (!taskId || !projectId) {
@@ -85,10 +85,10 @@ const getTaskById = asyncHandler(async (req, res) => {
 
 // create task
 const createTask = asyncHandler(async (req, res) => {
-  const { projectId, userId } = req.params;
+  const { projectId } = req.params;
 
-  if (!projectId || !userId) {
-    throw new ApiError(400, "Project and User ID are required");
+  if (!projectId) {
+    throw new ApiError(400, "Project ID  required");
   }
 
   const { title, description, assignedTo, status } = req.body;
@@ -120,7 +120,7 @@ const createTask = asyncHandler(async (req, res) => {
     description,
     project: new mongoose.Types.ObjectId(projectId),
     assignedTo: new mongoose.Types.ObjectId(assignedTo),
-    assignedBy: new mongoose.Types.ObjectId(userId),
+    assignedBy: new mongoose.Types.ObjectId(req.user._id),
     status,
     attachments,
   });
@@ -145,15 +145,15 @@ const createTask = asyncHandler(async (req, res) => {
 
 // update task
 const updateTask = asyncHandler(async (req, res) => {
+  const { projectId, taskId } = req.params;
   const { title, description, assignedTo, status } = req.body;
-  const { projectId, userId } = req.params;
 
-  if (!projectId || !userId) {
-    throw new ApiError(400, "Project and User ID are required");
+  if (!projectId || !taskId) {
+    throw new ApiError(400, "Project and task ID are required");
   }
 
   const task = await Task.findOne({
-    _id: new mongoose.Types.ObjectId(req.params.taskId),
+    _id: new mongoose.Types.ObjectId(taskId),
     project: new mongoose.Types.ObjectId(projectId),
   });
 
@@ -308,12 +308,12 @@ const deleteSubTask = asyncHandler(async (req, res) => {
 });
 
 export {
-  createSubTask,
   createTask,
-  deleteSubTask,
-  deleteTask,
-  getTaskById,
-  getTasks,
   updateTask,
+  getAllTasks,
+  getTaskById,
+  deleteTask,
+  createSubTask,
   toggleSubTaskDoneStatus,
+  deleteSubTask,
 };
