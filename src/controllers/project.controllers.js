@@ -198,7 +198,7 @@ const deleteProject = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Project not found");
   }
 
-  const deletedProject = await Project.findByIdAndDelete(projectId);
+  await Project.findByIdAndDelete(projectId);
 
   await ProjectMember.deleteMany({ project: projectId });
 
