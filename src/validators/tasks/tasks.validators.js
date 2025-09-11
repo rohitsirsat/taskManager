@@ -113,10 +113,48 @@ const deleteTaskValidator = () => {
   ];
 };
 
+const createSubTaskValidator = () => {
+  return [
+    param("taskId")
+      .trim()
+      .notEmpty()
+      .withMessage("Task ID is required")
+      .isMongoId()
+      .withMessage("Invalid Task ID"),
+
+    body("title").trim().notEmpty().withMessage("Title is required"),
+  ];
+};
+
+const toggleSubTaskDoneStatusValidator = () => {
+  return [
+    param("subTaskId")
+      .trim()
+      .notEmpty()
+      .withMessage("Subtask ID is required")
+      .isMongoId()
+      .withMessage("Invalid Subtask ID"),
+  ];
+};
+
+const deleteSubTaskValidator = () => {
+  return [
+    param("subTaskId")
+      .trim()
+      .notEmpty()
+      .withMessage("Subtask ID is required")
+      .isMongoId()
+      .withMessage("Invalid Subtask ID"),
+  ];
+};
+
 export {
   createTaskValidator,
   updateTaskValidator,
   getAllTasksValidator,
   getTaskByIdValidator,
   deleteTaskValidator,
+  createSubTaskValidator,
+  toggleSubTaskDoneStatusValidator,
+  deleteSubTaskValidator,
 };
