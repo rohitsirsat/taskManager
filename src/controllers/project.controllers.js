@@ -31,6 +31,9 @@ const projectCommonAggregation = (req) => {
       },
     },
     {
+      $unwind: "$createdBy",
+    },
+    {
       $lookup: {
         from: "projectmembers",
         localField: "_id",
@@ -134,7 +137,9 @@ const createProject = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, createdProject, "Project created successully"));
+    .json(
+      new ApiResponse(200, createdProject[0], "Project created successully"),
+    );
 });
 
 const updateProject = asyncHandler(async (req, res) => {
