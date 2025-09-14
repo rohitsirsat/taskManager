@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/async.handler.js";
 import { generateAccessTokenAndRefreshTokens } from "../controllers/auth.controllers.js";
 import { ProjectMember } from "../models/projecMember.models.js";
 import mongoose from "mongoose";
-import { Project } from "../models/project.models.js";
 
 export const authCheck = asyncHandler(async (req, res, next) => {
   const accessToken =
