@@ -30,48 +30,42 @@ import { validate } from "../middlewares/validator.middleware.js";
 const router = Router();
 
 router
-  .route("/:projectId/create-task")
+  .route("/create/:projectId")
   .post(
     authCheck,
     validateProjectPermission([
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    createTaskValidator(),
-    validate,
     upload.array("attachments", 3),
     createTask,
   );
 
 router
-  .route("/:projectId/update-task/:taskId")
-  .put(
+  .route("/update/:taskId/:projectId")
+  .patch(
     authCheck,
     validateProjectPermission([
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    updateTaskValidator(),
-    validate,
     upload.array("attachments", 3),
     updateTask,
   );
 
 router
-  .route("/:projectId/delete-task/:taskId")
+  .route("/:projectId/:taskId")
   .delete(
     authCheck,
     validateProjectPermission([
       UserRolesEnum.ADMIN,
       UserRolesEnum.PROJECT_ADMIN,
     ]),
-    deleteTaskValidator(),
-    validate,
     deleteTask,
   );
 
 router
-  .route("/:projectId/task/:taskId")
+  .route("/:taskId/:projectId")
   .get(
     authCheck,
     validateProjectPermission([
@@ -85,7 +79,7 @@ router
   );
 
 router
-  .route("/:projectId/tasks")
+  .route("/:projectId")
   .get(
     authCheck,
     validateProjectPermission([
@@ -104,15 +98,17 @@ router
 
 router
   .route("/subtask/:subTaskId/toggle-status")
-  .put(
-    authCheck,
-    toggleSubTaskDoneStatusValidator(),
-    validate,
-    toggleSubTaskDoneStatus,
-  );
+  .put(authCheck, toggleSubTaskDoneStatus);
 
 router
   .route("/subtask/:subTaskId")
-  .delete(authCheck, deleteSubTaskValidator(), validate, deleteSubTask);
+  .delete(
+    authCheck,
+    validateProjectPermission([
+      UserRolesEnum.ADMIN,
+      UserRolesEnum.PROJECT_ADMIN,
+    ]),
+    deleteSubTask,
+  );
 
 export default router;
