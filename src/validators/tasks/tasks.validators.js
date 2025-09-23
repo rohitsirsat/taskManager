@@ -4,7 +4,6 @@ import { AvailableTaskStatuses } from "../../utils/constants.js";
 const createTaskValidator = () => {
   return [
     param("projectId")
-      .trim()
       .notEmpty()
       .withMessage("Project ID is required")
       .isMongoId()
@@ -12,17 +11,15 @@ const createTaskValidator = () => {
 
     body("title").trim().notEmpty().withMessage("Title is required"),
 
-    body("description").trim().optional(),
+    body("description").optional(),
 
     body("assignedTo")
-      .trim()
       .notEmpty()
       .withMessage("Assigned to is required")
       .isMongoId()
       .withMessage("Invalid User ID"),
 
     body("status")
-      .trim()
       .notEmpty()
       .withMessage("Status is required")
       .isIn(AvailableTaskStatuses)
