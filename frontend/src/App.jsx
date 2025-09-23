@@ -1,9 +1,11 @@
-import { Button } from "./components/ui/button";
-
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./components/landingPage.jsx";
 function App() {
   return (
     <>
-      <Button>fuckkkk youuuuuu</Button>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
     </>
   );
 }
