@@ -1,6 +1,7 @@
-import { ThemeToggle } from "./themeToggle.jsx";
-import { Button } from "./ui/button.jsx";
-import { Card, CardContent } from "./ui/card.jsx";
+import { Link } from "react-router";
+import { ThemeToggle } from "../components/themeToggle.jsx";
+import { Button } from "../components/ui/button.jsx";
+import { Card, CardContent } from "../components/ui/card.jsx";
 
 import {
   Users,
@@ -12,7 +13,7 @@ import {
   Shield,
 } from "lucide-react";
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -30,10 +31,17 @@ export default function HomePage() {
 
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              <Button variant="ghost" className="hidden sm:inline-flex">
-                Log In
-              </Button>
-              <Button>Sign Up</Button>
+              <Link to="/login">
+                <Button
+                  variant="ghost"
+                  className="hidden sm:inline-flex cursor-pointer"
+                >
+                  Log In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="cursor-pointer">Sign Up</Button>
+              </Link>
             </div>
           </div>
         </div>
