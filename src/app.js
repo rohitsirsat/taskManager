@@ -1,7 +1,15 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  }),
+);
 
 /* user gonna send data in differint format || for that 
 we use this middlewares (limit) extended ==> object ke andar object etc
