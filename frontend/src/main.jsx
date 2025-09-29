@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")).render(
           disableTransitionOnChange
         >
           <App />
-          <Toaster richColors />
+          <Toaster richColors position="top-center" />
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
