@@ -35,4 +35,12 @@ const logoutUser = () => {
   return apiClient.post("/users/logout");
 };
 
+const getAllProjects = () => {
+  return apiClient.get("/projects");
+};
+
+const createProject = (data) => {
+  return apiClient.post("/projects/create-project");
+};
+
 export { registerUser, loginUser, logoutUser, apiClient };
