@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { loginUser, logoutUser, registerUser } from "@/api";
 import { LocalStorage } from "@/utils";
 
@@ -17,6 +17,15 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [error, setError] = useState(null);
 
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   const register = async (data) => {
     try {
       const response = await registerUser(data);
@@ -25,6 +34,11 @@ const AuthProvider = ({ children }) => {
 
       setUser(receivedData.data.user);
       setToken(receivedData.data.accessToken);
+
+      if (!LocalStorage.get("gbColor")) {
+        const randomBgColor = getRandomColor();
+        LocalStorage.set("gbColor", randomBgColor);
+      }
 
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
@@ -61,6 +75,11 @@ const AuthProvider = ({ children }) => {
     LocalStorage.clear();
     return response;
   };
+
+  useEffect(() => {
+    const getStoredUser = LocalStorage.get("user");
+    console.log("GET Stored User: ", getStoredUser?.username);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, register, token, login, logout }}>
