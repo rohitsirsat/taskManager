@@ -23,7 +23,7 @@ function Header({ setSidebarOpen }) {
         {/* Search centered on larger screens */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden sm:block w-full max-w-lg px-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="hidden sm:block absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search projects..."
               className="pl-10 w-full bg-muted/50"
@@ -49,7 +49,7 @@ function Header({ setSidebarOpen }) {
           <button
             aria-label="Open navigation"
             onClick={() => setSidebarOpen(true)}
-            className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md bg-muted hover:bg-muted/80 transition ml-1"
+            className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md bg-muted hover:bg-muted/80 transition ml-1 cursor-pointer"
           >
             <Menu className="h-5 w-5" />
           </button>

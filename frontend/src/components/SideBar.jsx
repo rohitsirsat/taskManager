@@ -1,7 +1,6 @@
 import { CheckSquare, FileText, Layers, LogOutIcon } from "lucide-react";
 import React, { Suspense } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   Sheet,
   SheetContent,
@@ -19,27 +18,39 @@ function SideBar({ open, setOpen }) {
       <aside className="hidden md:block w-64 border-r border-border bg-sidebar min-h-[calc(100vh-4rem)] sticky top-16">
         <div className="p-6">
           <nav className="space-y-2">
-            <Link
+            <NavLink
               to={"/tasks"}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                  : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              }
             >
               <CheckSquare className="h-5 w-5" />
               <span>Tasks</span>
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to={"/notes"}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                  : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              }
             >
               <FileText className="h-5 w-5" />
               <span>Notes</span>
-            </Link>
-            <Link
-              to={"/"}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium"
+            </NavLink>
+            <NavLink
+              to={"/projects"}
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                  : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              }
             >
               <Layers className="h-5 w-5" />
               <span>Projects</span>
-            </Link>
+            </NavLink>
           </nav>
         </div>
       </aside>
@@ -72,32 +83,44 @@ function SideBar({ open, setOpen }) {
                 </div>
               </div>
               <nav className="p-4 space-y-2">
-                <Link
-                  to="/tasks"
-                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  <CheckSquare className="h-5 w-5" />
-                  <span>Tasks</span>
-                </Link>
-
-                <Link
-                  to="/notes"
-                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-                  onClick={() => setOpen(false)}
-                >
-                  <FileText className="h-5 w-5" />
-                  <span>Notes</span>
-                </Link>
-
-                <Link
-                  to="/"
-                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                <NavLink
+                  to="/projects"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                      : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  }
                   onClick={() => setOpen(false)}
                 >
                   <Layers className="h-5 w-5" />
                   <span>Projects</span>
-                </Link>
+                </NavLink>
+
+                <NavLink
+                  to="/tasks"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                      : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  }
+                  onClick={() => setOpen(false)}
+                >
+                  <CheckSquare className="h-5 w-5" />
+                  <span>Tasks</span>
+                </NavLink>
+
+                <NavLink
+                  to="/notes"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                      : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  }
+                  onClick={() => setOpen(false)}
+                >
+                  <FileText className="h-5 w-5" />
+                  <span>Notes</span>
+                </NavLink>
               </nav>
 
               {/* redesigned footer: theme + logout */}
