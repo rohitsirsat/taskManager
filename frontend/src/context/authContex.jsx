@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { loginUser, logoutUser, registerUser } from "@/api";
 import { LocalStorage } from "@/utils";
+import { Loader } from "@/components/Loader";
 
 const AuthContext = createContext({
   user: null,
@@ -15,7 +16,7 @@ const useAuth = () => useContext(AuthContext);
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -77,13 +78,22 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
+
     const getStoredUser = LocalStorage.get("user");
-    console.log("GET Stored User: ", getStoredUser?.username);
+    const getStoredToken = LocalStorage.get("token");
+
+    if (getStoredToken && getStoredUser?._id) {
+      setUser(getStoredUser);
+      setToken(getStoredToken);
+    }
+
+    setIsLoading(false);
   }, []);
 
   return (
     <AuthContext.Provider value={{ user, register, token, login, logout }}>
-      {children}
+      {isLoading ? <Loader message="Loading ProjectFlow..." /> : children}
     </AuthContext.Provider>
   );
 };
