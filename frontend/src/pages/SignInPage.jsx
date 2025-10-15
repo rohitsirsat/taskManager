@@ -46,7 +46,7 @@ export default function SignInPage() {
         toast.error("Wrong credentials");
       } else {
         toast.success(response.data.message);
-        navigate("/home");
+        navigate("/projects");
       }
       setIsLoading(false);
     } catch (error) {
