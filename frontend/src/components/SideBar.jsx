@@ -19,6 +19,17 @@ function SideBar({ open, setOpen }) {
         <div className="p-6">
           <nav className="space-y-2">
             <NavLink
+              to={"/projects"}
+              className={({ isActive }) =>
+                isActive
+                  ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
+                  : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              }
+            >
+              <Layers className="h-5 w-5" />
+              <span>Projects</span>
+            </NavLink>
+            <NavLink
               to={"/tasks"}
               className={({ isActive }) =>
                 isActive
@@ -39,17 +50,6 @@ function SideBar({ open, setOpen }) {
             >
               <FileText className="h-5 w-5" />
               <span>Notes</span>
-            </NavLink>
-            <NavLink
-              to={"/projects"}
-              className={({ isActive }) =>
-                isActive
-                  ? "flex items-center space-x-3 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground font-medium "
-                  : "flex items-center space-x-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-              }
-            >
-              <Layers className="h-5 w-5" />
-              <span>Projects</span>
             </NavLink>
           </nav>
         </div>

@@ -3,8 +3,12 @@ import React from "react";
 import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ThemeToggle } from "./themeToggle";
+import { LocalStorage } from "@/utils";
 
 function Header({ setSidebarOpen }) {
+  const StoredUser = LocalStorage.get("user");
+  const StoredColor = LocalStorage.get("gbColor");
+
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="relative flex items-center h-16 px-4 md:px-6">
@@ -38,10 +42,14 @@ function Header({ setSidebarOpen }) {
             <ThemeToggle />
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer hover:bg-sidebar-accent rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg?height=32&width=32" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback style={{ backgroundColor: StoredColor }}>
+                <span className="text-white font-bold">
+                  {StoredUser.username[0].toUpperCase()}
+                </span>
+              </AvatarFallback>
             </Avatar>
           </div>
 
