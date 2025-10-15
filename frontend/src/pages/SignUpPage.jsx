@@ -48,7 +48,7 @@ export default function SignUpPage() {
         toast.error("User already axist");
       } else {
         toast.success(response.data.message);
-        navigate("/home");
+        navigate("/projects");
       }
       setIsLoading(false);
     } catch (error) {
