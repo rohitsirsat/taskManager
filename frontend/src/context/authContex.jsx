@@ -73,7 +73,8 @@ const AuthProvider = ({ children }) => {
     console.log("LOG OUT RES: ", response);
     setUser(null);
     setToken(null);
-    LocalStorage.clear();
+    LocalStorage.remove("user");
+    LocalStorage.remove("token");
     return response;
   };
 

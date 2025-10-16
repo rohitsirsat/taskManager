@@ -9,6 +9,7 @@ import Tasks from "./pages/Tasks.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 import { useAuth } from "./context/authContex.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 function App() {
   const { token, user } = useAuth();
@@ -50,6 +51,15 @@ function App() {
             element={
               <PrivateRoute>
                 <NotesPage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
               </PrivateRoute>
             }
           />
