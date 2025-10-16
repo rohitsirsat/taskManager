@@ -70,7 +70,6 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     const response = await logoutUser();
-    console.log("LOG OUT RES: ", response);
     setUser(null);
     setToken(null);
     LocalStorage.remove("user");
