@@ -12,7 +12,7 @@ const userSchema = new Schema(
         localPath: String,
       },
       default: {
-        url: `https://via.placeholder.com/200x200.png`,
+        url: `/placeholder.svg?height=32&width=32`,
         localPath: "",
       },
     },
