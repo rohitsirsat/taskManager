@@ -82,7 +82,9 @@ function Header({ setSidebarOpen }) {
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback style={{ backgroundColor: StoredColor }}>
+                  <AvatarFallback
+                    style={{ backgroundColor: StoredColor, color: "white" }}
+                  >
                     {(StoredUser?.username?.[0] || "U").toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
