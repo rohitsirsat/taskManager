@@ -1,3 +1,5 @@
+export const DB_NAME = "projectflow";
+
 export const UserRolesEnum = {
   ADMIN: "admin",
   PROJECT_ADMIN: "project_admin",
