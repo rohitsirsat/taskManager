@@ -25,9 +25,10 @@ import { validate } from "../middlewares/validator.middleware.js";
 
 const router = Router();
 
+router.route("/").get(authCheck, getAllProjects);
+
 router
-  .route("/")
-  .get(authCheck, getAllProjects)
+  .route("/create-project")
   .post(authCheck, createProjectValidator(), validate, createProject);
 
 router
