@@ -39,6 +39,31 @@ const projectCommonAggregation = (req) => {
         localField: "_id",
         foreignField: "project",
         as: "projectMembers",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "user",
+              foreignField: "_id",
+              as: "memberDetails",
+              pipeline: [
+                {
+                  $project: {
+                    password: 0,
+                    refreshToken: 0,
+                    forgotPasswordToken: 0,
+                    forgotPasswordExpiry: 0,
+                    emailVerificationToken: 0,
+                    emailVerificationExpiry: 0,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: "$memberDetails",
+          },
+        ],
       },
     },
     {
