@@ -19,62 +19,67 @@ export const authCheck = asyncHandler(async (req, res, next) => {
 
   // has accessToken
   try {
-    if (accessToken) {
-      const decodedToken = jwt.verify(
-        accessToken,
-        process.env.ACCESS_TOKEN_SECRET,
-      );
-
-      const user = await User.findById(decodedToken?._id).select(
-        "-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",
-      );
-
-      if (!user) {
-        throw new ApiError(401, "Invalid accessToken");
-      }
-
-      req.user = user;
-
-      next();
-    } else if (refreshToken) {
-      try {
-        const decodedRefreshToken = jwt.verify(
-          refreshToken,
-          process.env.REFRESH_TOKEN_SECRET,
+    try {
+      if (accessToken) {
+        const decodedToken = jwt.verify(
+          accessToken,
+          process.env.ACCESS_TOKEN_SECRET,
         );
 
-        const user = await User.findById(decodedRefreshToken?._id).select(
-          "-password -emailVerificationToken -emailVerificationExpiry",
+        const user = await User.findById(decodedToken?._id).select(
+          "-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry",
         );
 
         if (!user) {
-          throw new ApiError(401, "Invalid access");
+          throw new ApiError(401, "Invalid accessToken");
         }
 
-        // Generate new tokens
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-          await generateAccessTokenAndRefreshTokens(user?._id);
-
-        // update the user's refresh token in the database
-        user.refreshToken = newRefreshToken;
-        await user.save();
-
-        const cookieOptions = {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-        };
-
-        res.cookie("accessToken", newAccessToken, cookieOptions);
-        res.cookie("refreshToken", newRefreshToken, cookieOptions);
-
         req.user = user;
+
         next();
-      } catch (error) {
-        throw new ApiError(
-          401,
-          "Unable to refresh token: " + refreshError.message,
-        );
+      }
+    } catch (error) {
+      if (error.name !== "TokenExpiredError" || !refreshToken) {
+        throw new ApiError(401, "Invalid or expired access token");
+      }
+
+      if (refreshToken) {
+        try {
+          const decodedRefreshToken = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKEN_SECRET,
+          );
+
+          const user = await User.findById(decodedRefreshToken?._id).select(
+            "-password -emailVerificationToken -emailVerificationExpiry",
+          );
+
+          if (!user) {
+            throw new ApiError(401, "Invalid access");
+          }
+
+          // Generate new tokens
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+            await generateAccessTokenAndRefreshTokens(user?._id);
+
+          // update the user's refresh token in the database
+          user.refreshToken = newRefreshToken;
+          await user.save();
+
+          const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+          };
+
+          res.cookie("accessToken", newAccessToken, cookieOptions);
+          res.cookie("refreshToken", newRefreshToken, cookieOptions);
+
+          req.user = user;
+          next();
+        } catch (error) {
+          throw new ApiError(401, "Unable to refresh token: " + error.message);
+        }
       }
     }
   } catch (error) {
