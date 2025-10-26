@@ -31,6 +31,10 @@ const registerUser = (data) => {
   return apiClient.post("/users/register", data);
 };
 
+const getCurrentUser = () => {
+  return apiClient.get("/users/current-user");
+};
+
 const logoutUser = () => {
   return apiClient.post("/users/logout");
 };
@@ -43,4 +47,12 @@ const createProject = (data) => {
   return apiClient.post("/projects/create-project");
 };
 
-export { registerUser, loginUser, logoutUser, apiClient };
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  apiClient,
+  getAllProjects,
+  createProject,
+};
