@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/context/authContex";
+import { useAuth } from "@/context/authContex.jsx";
 import React from "react";
 
 function PublicRoute({ children }) {
