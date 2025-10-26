@@ -1,7 +1,8 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { loginUser, logoutUser, registerUser } from "@/api";
+import { loginUser, logoutUser, registerUser, getCurrentUser } from "@/api";
 import { LocalStorage } from "@/utils";
 import { Loader } from "@/components/Loader";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext({
   user: null,
@@ -17,6 +18,8 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -43,6 +46,7 @@ const AuthProvider = ({ children }) => {
 
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
+      navigate("/projects");
 
       return response;
     } catch (error) {
@@ -61,6 +65,7 @@ const AuthProvider = ({ children }) => {
 
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
+      navigate("/projects");
 
       return response;
     } catch (error) {
@@ -80,6 +85,12 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     setIsLoading(true);
 
+    const getServerUser = async () => {
+      const serverUser = await getCurrentUser();
+      // console.log("GET CURRENT USER: ", serverUser);
+      return serverUser;
+    };
+
     const getStoredUser = LocalStorage.get("user");
     const getStoredToken = LocalStorage.get("token");
 
@@ -87,6 +98,7 @@ const AuthProvider = ({ children }) => {
       setUser(getStoredUser);
       setToken(getStoredToken);
     }
+    getServerUser();
 
     setIsLoading(false);
   }, []);
