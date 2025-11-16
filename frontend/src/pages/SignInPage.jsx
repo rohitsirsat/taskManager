@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Layers, Eye, EyeOff, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useProject } from "@/context/ProjectContext.";
 
 export default function SignInPage() {
   const [data, setData] = useState({
@@ -23,6 +24,8 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const { fetchAllProjects } = useProject();
 
   const handleDataChange = (name) => (e) => {
     setData({ ...data, [name]: e.target.value });
@@ -46,6 +49,7 @@ export default function SignInPage() {
         toast.error("Wrong credentials");
       } else {
         toast.success(response.data.message);
+        await fetchAllProjects();
         navigate("/projects");
       }
       setIsLoading(false);
