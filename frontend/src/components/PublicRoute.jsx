@@ -1,11 +1,17 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/context/authContex.jsx";
-import React from "react";
+import { Loader } from "./Loader";
 
 function PublicRoute({ children }) {
-  const { token, user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  if (token && user?._id) return <Navigate to="/projects" replace />;
+  if (isLoading) {
+    return <Loader message="Verifying user" />;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/projects" replace />;
+  }
 
   return children;
 }
