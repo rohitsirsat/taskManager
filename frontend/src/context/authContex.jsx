@@ -48,6 +48,7 @@ const AuthProvider = ({ children }) => {
 
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
+      fetchAll;
       setIsAuthenticated(true);
 
       return response;
@@ -115,7 +116,7 @@ const AuthProvider = ({ children }) => {
           throw new Error("IN AUTH CONTEXT: No user data");
         }
       } catch (error) {
-        console.log("Auth authApiCheck error", error);
+        // console.log("Auth authApiCheck error", error);
         if (mounted) {
           setUser(null), setToken(null), setIsAuthenticated(false);
           LocalStorage.remove("user");
@@ -127,7 +128,7 @@ const AuthProvider = ({ children }) => {
     };
     authApiCheck();
     return () => {
-      mounted = true;
+      mounted = false;
     };
   }, []);
 
