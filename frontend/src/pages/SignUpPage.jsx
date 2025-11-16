@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Layers, Eye, EyeOff, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useProject } from "@/context/ProjectContext.";
 
 export default function SignUpPage() {
   const [data, setData] = useState({
@@ -32,6 +33,8 @@ export default function SignUpPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const { fetchAllProjects } = useProject();
+
   const handleRegister = async () => {
     try {
       setIsLoading(true);
@@ -48,6 +51,7 @@ export default function SignUpPage() {
         toast.error("User already axist");
       } else {
         toast.success(response.data.message);
+        await fetchAllProjects();
         navigate("/projects");
       }
       setIsLoading(false);
