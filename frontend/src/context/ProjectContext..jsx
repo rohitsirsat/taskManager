@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { getAllProjects, createProject } from "@/api/index.js";
 import { Loader } from "@/components/Loader";
 
 const ProjectContext = createContext({
   projects: [],
-  isLoading: Boolean,
+  isLoading: true,
   fetchAllProjects: async () => {},
   createNewProject: async () => {},
 });
@@ -12,25 +18,28 @@ const ProjectContext = createContext({
 const useProject = () => useContext(ProjectContext);
 
 const ProjectProvider = ({ children }) => {
-  const [projects, setProjects] = useState(null);
+  const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAllProjects = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getAllProjects();
+  const fetchAllProjects = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getAllProjects();
 
-        setProjects(response.data.data.projects);
-        setIsLoading(false);
-        return response.data;
-      } catch (error) {
-        setIsLoading(false);
-        return error;
-      }
-    };
-    fetchAllProjects();
+      setProjects(response.data.data.projects);
+
+      return response.data;
+    } catch (error) {
+      setProjects([]);
+      return error;
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchAllProjects();
+  }, [fetchAllProjects]);
 
   const createNewProject = async (data) => {
     try {
@@ -43,8 +52,10 @@ const ProjectProvider = ({ children }) => {
   };
 
   return (
-    <ProjectContext.Provider value={{ projects, createNewProject, isLoading }}>
-      {isLoading ? <Loader message="Loading ProjectFlow..." /> : children}
+    <ProjectContext.Provider
+      value={{ projects, createNewProject, fetchAllProjects, isLoading }}
+    >
+      {children}
     </ProjectContext.Provider>
   );
 };
