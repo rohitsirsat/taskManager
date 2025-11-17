@@ -26,7 +26,7 @@ const ProjectProvider = ({ children }) => {
     try {
       const response = await getAllProjects();
 
-      setProjects(response.data.data.projects);
+      setProjects(response?.data?.data?.projects);
 
       return response.data;
     } catch (error) {
