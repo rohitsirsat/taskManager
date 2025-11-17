@@ -44,7 +44,15 @@ const getAllProjects = () => {
 };
 
 const createProject = (data) => {
-  return apiClient.post("/projects/create-project");
+  return apiClient.post("/projects/create-project", data);
+};
+
+const updateProject = (projectId, data) => {
+  return apiClient.put(`/projects/${projectId}`, data);
+};
+
+const deleteProject = (projectId) => {
+  return apiClient.delete(`/projects/${projectId}`);
 };
 
 export {
@@ -55,4 +63,6 @@ export {
   apiClient,
   getAllProjects,
   createProject,
+  updateProject,
+  deleteProject,
 };
