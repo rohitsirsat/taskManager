@@ -5,7 +5,12 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { getAllProjects, createProject } from "@/api/index.js";
+import {
+  getAllProjects,
+  createProject,
+  updateProject,
+  deleteProject,
+} from "@/api/index.js";
 import { Loader } from "@/components/Loader";
 
 const ProjectContext = createContext({
@@ -13,6 +18,8 @@ const ProjectContext = createContext({
   isLoading: true,
   fetchAllProjects: async () => {},
   createNewProject: async () => {},
+  updateExistingProject: async () => {},
+  deleteExistingProject: async () => {},
 });
 
 const useProject = () => useContext(ProjectContext);
@@ -42,18 +49,54 @@ const ProjectProvider = ({ children }) => {
   }, [fetchAllProjects]);
 
   const createNewProject = async (data) => {
+    setIsLoading(true);
     try {
       const response = await createProject(data);
 
       return response;
     } catch (error) {
+      console.log("ERR IN PRO CRE: ", error);
       return error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateExistingProject = async (projectId, data) => {
+    setIsLoading(true);
+    try {
+      const response = await updateProject(projectId, data);
+      return response;
+    } catch (error) {
+      console.log("ERR IN PRO UPD: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteExistingProject = async (projectId) => {
+    setIsLoading(true);
+    try {
+      const response = await deleteProject(projectId);
+      return response;
+    } catch (error) {
+      console.log("ERR IN PRO DELE: ", error);
+      return error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <ProjectContext.Provider
-      value={{ projects, createNewProject, fetchAllProjects, isLoading }}
+      value={{
+        projects,
+        createNewProject,
+        fetchAllProjects,
+        updateExistingProject,
+        deleteExistingProject,
+        isLoading,
+      }}
     >
       {children}
     </ProjectContext.Provider>
