@@ -21,9 +21,13 @@ import {
 } from "@/components/ui/empty";
 import { useProject } from "@/context/ProjectContext..jsx";
 import { Loader } from "@/components/Loader";
+import CreateProjectForm from "@/components/CreateProjectForm";
+import { useState } from "react";
 
 export default function HomePage() {
   const { projects, isLoading } = useProject();
+  const [editingProject, setEditingProject] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isLoading) {
     return <Loader message="Loading projects..." />;
