@@ -10,7 +10,6 @@ import PublicRoute from "./components/PublicRoute.jsx";
 import { useAuth } from "./context/authContex.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
-import ProjectsPage from "./pages/ProjectsPage.jsx";
 
 function App() {
   const { token, user } = useAuth();
