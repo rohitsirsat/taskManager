@@ -43,7 +43,7 @@ const ProjectProvider = ({ children }) => {
       const response = await getAllProjects({ page });
 
       const data = response?.data?.data;
-      console.log("PRJ DATA: ", data);
+
       setProjects(data.projects || []);
       setCurrentPage(data?.page || 1);
       setTotalPages(data?.totalPages || 1);
@@ -86,7 +86,7 @@ const ProjectProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentPage, hasNextPage, totalPages]);
 
   useEffect(() => {
     fetchAllProjects();
