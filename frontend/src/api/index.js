@@ -39,8 +39,8 @@ const logoutUser = () => {
   return apiClient.post("/users/logout");
 };
 
-const getAllProjects = () => {
-  return apiClient.get("/projects");
+const getAllProjects = ({ page = 1, limit = 10 } = {}) => {
+  return apiClient.get(`/projects?page=${page}&limit=${limit}`);
 };
 
 const createProject = (data) => {
