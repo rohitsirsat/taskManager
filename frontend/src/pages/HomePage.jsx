@@ -23,11 +23,62 @@ import { useProject } from "@/context/ProjectContext..jsx";
 import { Loader } from "@/components/Loader";
 import CreateProjectForm from "@/components/CreateProjectForm";
 import { useState } from "react";
+import { Dialog } from "@/components/ui/dialog";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 export default function HomePage() {
-  const { projects, isLoading } = useProject();
+  const { projects, isLoading, fetchAllProjects, createNewProject } =
+    useProject();
   const [editingProject, setEditingProject] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const handleEditClick = (project) => {
+    setEditingProject(project);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCreateSubmit = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      await createNewProject(formData);
+
+      console.log("Create payload:", formData);
+
+      // refresh projects list
+      if (typeof fetchAllProjects === "function") {
+        await fetchAllProjects();
+      }
+    } catch (err) {
+      console.error("Error creating project:", err);
+    } finally {
+      setIsSubmitting(false);
+      setIsCreateDialogOpen(false);
+    }
+  };
+
+  const handleEditSubmit = async (formData) => {
+    setIsSubmitting(true);
+    try {
+      // TODO: call updateProject API
+      // await updateProject(editingProject._id, formData);
+      console.log("Update payload for", editingProject?._id, formData);
+
+      // refresh projects list
+      if (typeof fetchAllProjects === "function") {
+        await fetchAllProjects();
+      }
+    } catch (err) {
+      console.error("Error updating project:", err);
+    } finally {
+      setIsSubmitting(false);
+      setIsEditDialogOpen(false);
+      setEditingProject(null);
+    }
+  };
 
   if (isLoading) {
     return <Loader message="Loading projects..." />;
@@ -47,10 +98,25 @@ export default function HomePage() {
           </EmptyHeader>
           <EmptyContent>
             <div className="flex gap-2">
-              <Button className={"cursor-pointer"}>Create Project</Button>
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className={"cursor-pointer"}
+              >
+                Create Project
+              </Button>
             </div>
           </EmptyContent>
         </Empty>
+
+        {/* Create Project Dialog */}
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <CreateProjectForm
+            onSubmit={handleCreateSubmit}
+            isLoading={isSubmitting}
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          />
+        </Dialog>
       </div>
     );
   } else {
@@ -67,9 +133,13 @@ export default function HomePage() {
                   Manage and organize your team projects
                 </p>
               </div>
-              <Button className="bg-primary hover:bg-primary/90">
+
+              <Button
+                className="rounded-2xl cursor-pointer"
+                onClick={() => setIsCreateDialogOpen(true)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
-                Create New Project
+                Create Project
               </Button>
             </div>
 
@@ -111,7 +181,6 @@ export default function HomePage() {
                         {/* Members */}
                         <div className="flex items-center space-x-2">
                           <span className="text-sm text-muted-foreground">
-                            {/* {project.projectMembers.length} */}
                             <Users />
                           </span>
                           <div className="flex -space-x-2">
@@ -122,23 +191,22 @@ export default function HomePage() {
                               >
                                 <AvatarImage
                                   src={
-                                    member.memberDetails.avatar.url ||
+                                    member.memberDetails?.avatar?.url ||
                                     "/placeholder.svg"
                                   }
                                 />
                                 <AvatarFallback>
-                                  {member.memberDetails.username
-                                    .split(" ")
+                                  {member.memberDetails?.username
+                                    ?.split(" ")
                                     .map((n) => n[0])
-                                    .join("")}
+                                    .join("") || "U"}
                                 </AvatarFallback>
                               </Avatar>
                             ))}
-                            {project.projectMembers >= 3 && (
+                            {project.projectMembers?.length > 3 && (
                               <div className="h-8 w-8 rounded-full bg-muted border-2 border-background flex items-center justify-center">
                                 <span className="text-xs font-medium">
                                   +{project.memberCount - 3}
-                                  {/* {project.projectMembers.length} */}
                                 </span>
                               </div>
                             )}
@@ -148,12 +216,17 @@ export default function HomePage() {
                         {/* Created */}
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                           <Clock className="h-4 w-4" />
-                          <span>{project.createdAt.slice(0, 10)}</span>
+                          <span>{dayjs(project?.createdAt).fromNow()}</span>
                         </div>
 
                         {/* Actions */}
                         <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditClick(project)}
+                            aria-label={`Edit ${project.name}`}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
@@ -171,6 +244,26 @@ export default function HomePage() {
             </Card>
           </div>
         </main>
+
+        {/* Create Project Dialog */}
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <CreateProjectForm
+            onSubmit={handleCreateSubmit}
+            isLoading={isSubmitting}
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          />
+        </Dialog>
+
+        {/* Edit Project Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <CreateProjectForm
+            onSubmit={handleEditSubmit}
+            isLoading={isSubmitting}
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+          />
+        </Dialog>
       </div>
     );
   }
