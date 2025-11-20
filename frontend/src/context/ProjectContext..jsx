@@ -16,7 +16,12 @@ import { Loader } from "@/components/Loader";
 const ProjectContext = createContext({
   projects: [],
   isLoading: true,
+  hasNextPage: false,
+  currentPage: 1,
+  totalPages: 1,
+  totalProjects: 0,
   fetchAllProjects: async () => {},
+  loadMoreProjects: async () => {},
   createNewProject: async () => {},
   updateExistingProject: async () => {},
   deleteExistingProject: async () => {},
@@ -27,17 +32,56 @@ const useProject = () => useContext(ProjectContext);
 const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProjects, setTotalProjects] = useState(0);
 
-  const fetchAllProjects = useCallback(async () => {
+  const fetchAllProjects = useCallback(async (page = 1) => {
     setIsLoading(true);
     try {
-      const response = await getAllProjects();
+      const response = await getAllProjects({ page });
 
-      setProjects(response?.data?.data?.projects);
+      const data = response?.data?.data;
+      console.log("PRJ DATA: ", data);
+      setProjects(data.projects || []);
+      setCurrentPage(data?.page || 1);
+      setTotalPages(data?.totalPages || 1);
+      setTotalProjects(data?.totalProjects || 0);
+      setHasNextPage(data?.hasNextPage || false);
 
       return response.data;
     } catch (error) {
       setProjects([]);
+      return error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load more projects:
+  const loadMoreProjects = useCallback(async () => {
+    if (!hasNextPage) return null;
+
+    try {
+      setIsLoading(true);
+
+      const nextPage = currentPage + 1;
+      const response = await getAllProjects({ page: nextPage });
+
+      const data = response?.data.data;
+
+      // append new projects to existing list
+      setProjects((prev) => [...prev, ...(data?.projects || [])]);
+
+      setCurrentPage(data?.page || nextPage);
+      setTotalPages(data?.totalPages || totalPages);
+      setTotalProjects(data?.totalProjects || totalProjects);
+      setHasNextPage(data?.hasNextPage || false);
+
+      return response.data;
+    } catch (error) {
+      console.log("ERR IN PRO DELE: ", error);
       return error;
     } finally {
       setIsLoading(false);
@@ -91,6 +135,11 @@ const ProjectProvider = ({ children }) => {
     <ProjectContext.Provider
       value={{
         projects,
+        hasNextPage,
+        currentPage,
+        totalPages,
+        totalProjects,
+        loadMoreProjects,
         createNewProject,
         fetchAllProjects,
         updateExistingProject,
