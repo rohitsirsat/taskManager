@@ -10,6 +10,7 @@ import {
   Clock,
   FolderOpen,
   Users,
+  Loader2,
 } from "lucide-react";
 import {
   Empty,
@@ -29,12 +30,20 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export default function HomePage() {
-  const { projects, isLoading, fetchAllProjects, createNewProject } =
-    useProject();
+  const {
+    projects,
+    isLoading,
+    fetchAllProjects,
+    createNewProject,
+    loadMoreProjects,
+    hasNextPage,
+    totalProjects,
+  } = useProject();
   const [editingProject, setEditingProject] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const handleEditClick = (project) => {
     setEditingProject(project);
@@ -77,6 +86,17 @@ export default function HomePage() {
       setIsSubmitting(false);
       setIsEditDialogOpen(false);
       setEditingProject(null);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    try {
+      await loadMoreProjects();
+    } catch (error) {
+      console.error("Load more error:", e);
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -243,6 +263,22 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
+
+          {hasNextPage && (
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-md cursor-pointer"
+              >
+                {isLoadingMore ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  `Load more (${projects.length}/${totalProjects})`
+                )}
+              </Button>
+            </div>
+          )}
         </main>
 
         {/* Create Project Dialog */}
