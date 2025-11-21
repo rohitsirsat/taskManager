@@ -214,24 +214,13 @@ const updateProject = asyncHandler(async (req, res) => {
 const deleteProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
 
-  const project = await Project.aggregate([
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(projectId),
-        createdBy: req.user?._id,
-      },
-    },
-    ...projectCommonAggregation(req),
-  ]);
+  const deleteProject = await Project.findOneAndDelete({
+    _id: new mongoose.Types.ObjectId(projectId),
+    createdBy: req.user?._id,
+  });
 
-  if (!project[0] || project.length === 0) {
-    throw new ApiError(404, "Project not found");
-  }
-
-  const deletProject = await Project.findByIdAndDelete(projectId);
-
-  if (!deletProject) {
-    throw new ApiError(500, "Something went wrong");
+  if (!deleteProject) {
+    throw new ApiError(404, "Project does not found");
   }
 
   await ProjectMember.deleteMany({ project: projectId });
