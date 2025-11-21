@@ -57,8 +57,6 @@ export default function HomePage() {
     try {
       await createNewProject(formData);
 
-      console.log("Create payload:", formData);
-
       // refresh projects list
       if (typeof fetchAllProjects === "function") {
         await fetchAllProjects();
