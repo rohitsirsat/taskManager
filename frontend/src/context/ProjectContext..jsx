@@ -100,7 +100,6 @@ const ProjectProvider = ({ children }) => {
 
       return response;
     } catch (error) {
-      console.log("ERR IN PRO CRE: ", error);
       return error;
     } finally {
       setIsLoading(false);
