@@ -123,9 +123,12 @@ const ProjectProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await deleteProject(projectId);
+      setProjects((prevProject) =>
+        prevProject.filter((project) => project._id !== projectId),
+      );
+
       return response;
     } catch (error) {
-      console.log("ERR IN PRO DELE: ", error);
       return error;
     } finally {
       setIsLoading(false);
