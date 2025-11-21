@@ -27,6 +27,7 @@ import { useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { toast } from "sonner";
 dayjs.extend(relativeTime);
 
 export default function HomePage() {
@@ -92,9 +93,10 @@ export default function HomePage() {
 
   const handleDeleteProject = async (projectId) => {
     try {
-      await deleteExistingProject(projectId);
+      const res = await deleteExistingProject(projectId);
+      toast.success(res.data.message);
     } catch (error) {
-      console.log("ERR deleting project: ", error);
+      toast.error("your not the author");
     }
   };
 
@@ -256,7 +258,7 @@ export default function HomePage() {
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
-                            onClick={handleDeleteProject}
+                            onClick={() => handleDeleteProject(project._id)}
                             variant="ghost"
                             size="sm"
                             className={"cursor-pointer"}
