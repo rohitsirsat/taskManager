@@ -11,11 +11,11 @@ import {
   updateProject,
   deleteProject,
 } from "@/api/index.js";
-import { Loader } from "@/components/Loader";
 
 const ProjectContext = createContext({
   projects: [],
   isLoading: true,
+  isLoadingMore: false,
   hasNextPage: false,
   currentPage: 1,
   totalPages: 1,
@@ -32,6 +32,7 @@ const useProject = () => useContext(ProjectContext);
 const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -64,7 +65,7 @@ const ProjectProvider = ({ children }) => {
     if (!hasNextPage) return null;
 
     try {
-      setIsLoading(true);
+      setIsLoadingMore(true);
 
       const nextPage = currentPage + 1;
       const response = await getAllProjects({ page: nextPage });
@@ -84,7 +85,7 @@ const ProjectProvider = ({ children }) => {
       console.log("ERR IN PRO DELE: ", error);
       return error;
     } finally {
-      setIsLoading(false);
+      setIsLoadingMore(false);
     }
   }, [currentPage, hasNextPage, totalPages]);
 
@@ -145,6 +146,7 @@ const ProjectProvider = ({ children }) => {
         updateExistingProject,
         deleteExistingProject,
         isLoading,
+        isLoadingMore,
       }}
     >
       {children}
