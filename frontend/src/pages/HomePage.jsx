@@ -33,17 +33,18 @@ export default function HomePage() {
   const {
     projects,
     isLoading,
+    isLoadingMore,
     fetchAllProjects,
     createNewProject,
     loadMoreProjects,
     hasNextPage,
     totalProjects,
+    deleteExistingProject,
   } = useProject();
   const [editingProject, setEditingProject] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const handleEditClick = (project) => {
     setEditingProject(project);
@@ -89,14 +90,19 @@ export default function HomePage() {
     }
   };
 
+  const handleDeleteProject = async (projectId) => {
+    try {
+      await deleteExistingProject(projectId);
+    } catch (error) {
+      console.log("ERR deleting project: ", error);
+    }
+  };
+
   const handleLoadMore = async () => {
-    setIsLoadingMore(true);
     try {
       await loadMoreProjects();
     } catch (error) {
       console.error("Load more error:", e);
-    } finally {
-      setIsLoadingMore(false);
     }
   };
 
@@ -249,7 +255,12 @@ export default function HomePage() {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button
+                            onClick={handleDeleteProject}
+                            variant="ghost"
+                            size="sm"
+                            className={"cursor-pointer"}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
@@ -272,7 +283,10 @@ export default function HomePage() {
                 className="rounded-md cursor-pointer"
               >
                 {isLoadingMore ? (
-                  <Loader2 className="animate-spin" />
+                  <div className="flex flex-row justify-center items-center space-x-2">
+                    <p>Loading</p>
+                    <Loader2 className="animate-spin" />
+                  </div>
                 ) : (
                   `Load more (${projects.length}/${totalProjects})`
                 )}
