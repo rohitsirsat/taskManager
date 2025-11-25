@@ -40,6 +40,7 @@ const AuthProvider = ({ children }) => {
 
       setUser(receivedData.data.user);
       setToken(receivedData.data.accessToken);
+      setIsAuthenticated(true);
 
       if (!LocalStorage.get("gbColor")) {
         const randomBgColor = getRandomColor();
@@ -49,7 +50,7 @@ const AuthProvider = ({ children }) => {
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
       fetchAll;
-      setIsAuthenticated(true);
+      navigate("/projects");
 
       return response;
     } catch (error) {
@@ -65,10 +66,11 @@ const AuthProvider = ({ children }) => {
 
       setUser(receivedData.data.user);
       setToken(receivedData.data.accessToken);
+      setIsAuthenticated(true);
 
       LocalStorage.set("user", receivedData.data.user);
       LocalStorage.set("token", receivedData.data.accessToken);
-      setIsAuthenticated(true);
+      navigate("/projects");
 
       return response;
     } catch (error) {
