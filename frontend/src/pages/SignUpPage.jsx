@@ -46,17 +46,15 @@ export default function SignUpPage() {
           email: "",
           password: "",
         });
-      }
-      if (response.status === 409) {
-        toast.error("User already axist");
-      } else {
+
         toast.success(response.data.message);
+
         await fetchAllProjects();
-        navigate("/projects");
+      } else if (response.status === 409) {
+        toast.error("User already axist");
       }
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
+      console.error("Error during registration:", error);
     } finally {
       setIsLoading(false);
     }
