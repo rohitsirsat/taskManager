@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Layers, Eye, EyeOff, Loader } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useProject } from "@/context/ProjectContext.";
 
 export default function SignInPage() {
@@ -32,11 +32,11 @@ export default function SignInPage() {
   };
 
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       setIsLoading(true);
+
       const response = await login(data);
 
       if (response?.data?.success === true) {
@@ -44,17 +44,14 @@ export default function SignInPage() {
           username: "",
           password: "",
         });
-      }
-      if (response.status === 401) {
-        toast.error("Wrong credentials");
-      } else {
+
         toast.success(response.data.message);
         await fetchAllProjects();
-        navigate("/projects");
+      } else if (response.status === 401) {
+        toast.error("Wrong credentials");
       }
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
+      console.error("Err while login user");
     } finally {
       setIsLoading(false);
     }
