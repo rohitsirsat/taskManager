@@ -10,7 +10,6 @@ import PublicRoute from "./components/PublicRoute.jsx";
 import { useAuth } from "./context/authContex.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
-import CreateProjectForm from "./components/CreateProjectForm.jsx";
 
 function App() {
   const { token, user } = useAuth();
@@ -39,14 +38,15 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/create-project"
+
+          {/* <Route
+            path="/demo-page"
             element={
               <PrivateRoute>
-                <CreateProjectForm />
+                <DemoPage />
               </PrivateRoute>
             }
-          />
+          /> */}
 
           {/* projects routes ends*/}
 
