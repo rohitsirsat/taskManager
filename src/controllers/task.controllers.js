@@ -69,34 +69,7 @@ const getTaskById = asyncHandler(async (req, res) => {
         project: new mongoose.Types.ObjectId(projectId),
       },
     },
-
-    {
-      $lookup: {
-        from: "users",
-        localField: "assignedTo",
-        foreignField: "_id",
-        as: "assignedTo",
-        pipeline: [{ $project: { username: 1, avatar: 1 } }],
-      },
-    },
-
-    {
-      $lookup: {
-        from: "users",
-        localField: "assignedBy",
-        foreignField: "_id",
-        as: "assignedBy",
-        pipeline: [{ $project: { username: 1, avatar: 1 } }],
-      },
-    },
-    {
-      $lookup: {
-        from: "subtasks",
-        localField: "subtaskss",
-        foreignField: "_id",
-        as: "subTask",
-      },
-    },
+    ...taskCommonAggregation(req),
   ]);
 
   if (!getTask.length) {
