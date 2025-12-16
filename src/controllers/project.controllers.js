@@ -19,12 +19,10 @@ const projectCommonAggregation = (req) => {
         pipeline: [
           {
             $project: {
-              password: 0,
-              refreshToken: 0,
-              forgotPasswordToken: 0,
-              forgotPasswordExpiry: 0,
-              emailVerificationToken: 0,
-              emailVerificationExpiry: 0,
+              _id: 1,
+              username: 1,
+              avatar: 1,
+              email: 1,
             },
           },
         ],
@@ -49,12 +47,10 @@ const projectCommonAggregation = (req) => {
               pipeline: [
                 {
                   $project: {
-                    password: 0,
-                    refreshToken: 0,
-                    forgotPasswordToken: 0,
-                    forgotPasswordExpiry: 0,
-                    emailVerificationToken: 0,
-                    emailVerificationExpiry: 0,
+                    _id: 1,
+                    username: 1,
+                    avatar: 1,
+                    email: 1,
                   },
                 },
               ],
@@ -66,12 +62,131 @@ const projectCommonAggregation = (req) => {
         ],
       },
     },
+    // ✅ FIXED: Properly aggregate tasks with user lookups
     {
       $lookup: {
         from: "tasks",
         localField: "_id",
         foreignField: "project",
         as: "tasks",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "assignedTo",
+              foreignField: "_id",
+              as: "assignedTo",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    username: 1,
+                    avatar: 1,
+                    email: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: {
+              path: "$assignedTo",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "assignedBy",
+              foreignField: "_id",
+              as: "assignedBy",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    username: 1,
+                    avatar: 1,
+                    email: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: {
+              path: "$assignedBy",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          // ✅ Lookup subtasks
+          {
+            $lookup: {
+              from: "subtasks",
+              localField: "_id",
+              foreignField: "task",
+              as: "subTasks",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    title: 1,
+                    isCompleted: 1,
+                    createdBy: 1,
+                    createdAt: 1,
+                  },
+                },
+              ],
+            },
+          },
+          // ✅ Add computed fields for task progress
+          {
+            $addFields: {
+              subtaskCount: { $size: "$subTasks" },
+              completedSubtaskCount: {
+                $size: {
+                  $filter: {
+                    input: "$subTasks",
+                    as: "subtask",
+                    cond: "$$subtask.isCompleted",
+                  },
+                },
+              },
+              progress: {
+                $cond: [
+                  { $eq: [{ $size: "$subTasks" }, 0] },
+                  0,
+                  {
+                    $round: [
+                      {
+                        $multiply: [
+                          {
+                            $divide: [
+                              {
+                                $size: {
+                                  $filter: {
+                                    input: "$subTasks",
+                                    as: "subtask",
+                                    cond: "$$subtask.isCompleted",
+                                  },
+                                },
+                              },
+                              { $size: "$subTasks" },
+                            ],
+                          },
+                          100,
+                        ],
+                      },
+                      2,
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+        ],
       },
     },
     {
@@ -121,7 +236,7 @@ const getProjectById = asyncHandler(async (req, res) => {
     ...projectCommonAggregation(req),
   ]);
 
-  if (!project) {
+  if (!project || project.length === 0) {
     throw new ApiError(404, "Project not found");
   }
 
