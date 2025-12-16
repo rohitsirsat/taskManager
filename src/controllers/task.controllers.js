@@ -35,7 +35,16 @@ const taskCommonAggregation = (req) => {
 
 // get all tasks
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find();
+  const { projectId } = req.params;
+
+  const tasks = await Task.aggregate([
+    {
+      $match: {
+        project: new mongoose.Types.ObjectId(projectId),
+      },
+    },
+    ...taskCommonAggregation(req),
+  ]);
 
   if (tasks.length === 0) {
     throw new ApiError(401, "No task exist");
