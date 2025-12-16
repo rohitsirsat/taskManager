@@ -6,7 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./components/themeProvider.jsx";
 import { AuthProvider } from "./context/authContex";
 import { Toaster } from "./components/ui/sonner";
-import { ProjectProvider } from "@/context/ProjectContext.";
+import { ProjectProvider } from "@/context/ProjectContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
