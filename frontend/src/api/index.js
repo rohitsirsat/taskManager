@@ -39,8 +39,13 @@ const logoutUser = () => {
   return apiClient.post("/users/logout");
 };
 
+// =========================> Project Routes Starts <==============================
 const getAllProjects = ({ page = 1, limit = 10 } = {}) => {
   return apiClient.get(`/projects?page=${page}&limit=${limit}`);
+};
+
+const getProjectById = (projectId) => {
+  return apiClient.get(`/projects/${projectId}`);
 };
 
 const createProject = (data) => {
@@ -62,6 +67,7 @@ export {
   getCurrentUser,
   apiClient,
   getAllProjects,
+  getProjectById,
   createProject,
   updateProject,
   deleteProject,
