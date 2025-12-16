@@ -9,7 +9,9 @@ import Tasks from "./pages/Tasks.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 import { useAuth } from "./context/authContex.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
+import ProjectDashBoardPage from "./pages/ProjectDashBoardPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import DemoPage from "./pages/DemoPage.jsx";
 
 function App() {
   const { token, user } = useAuth();
@@ -39,14 +41,23 @@ function App() {
             }
           />
 
-          {/* <Route
-            path="/demo-page"
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <ProjectDashBoardPage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/demo"
             element={
               <PrivateRoute>
                 <DemoPage />
               </PrivateRoute>
             }
-          /> */}
+          />
 
           {/* projects routes ends*/}
 
@@ -102,6 +113,8 @@ function App() {
             </PublicRoute>
           }
         />
+
+        <Route path="*" element={<p>404 Not found</p>} />
       </Routes>
     </>
   );
