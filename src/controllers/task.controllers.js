@@ -89,10 +89,10 @@ const createTask = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Project ID  required");
   }
 
-  const { title, description, assignedTo, status } = req.body;
+  const { title, description, assignedTo, status, priority } = req.body;
 
   if (
-    [title, description, assignedTo, status].some(
+    [title, description, assignedTo, status, priority].some(
       (field) => field?.trim() === "",
     )
   ) {
@@ -120,6 +120,7 @@ const createTask = asyncHandler(async (req, res) => {
     assignedTo: new mongoose.Types.ObjectId(assignedTo),
     assignedBy: new mongoose.Types.ObjectId(req.user?._id),
     status,
+    priority,
     attachments,
   });
 
@@ -144,7 +145,7 @@ const createTask = asyncHandler(async (req, res) => {
 // update task
 const updateTask = asyncHandler(async (req, res) => {
   const { projectId, taskId } = req.params;
-  const { title, description, assignedTo, status } = req.body;
+  const { title, description, assignedTo, status, priority } = req.body;
 
   const task = await Task.findOne({
     _id: new mongoose.Types.ObjectId(taskId),
@@ -179,6 +180,7 @@ const updateTask = asyncHandler(async (req, res) => {
         assignedTo: new mongoose.Types.ObjectId(assignedTo),
         assignedBy: new mongoose.Types.ObjectId(req._id),
         status,
+        priority,
         attachments,
       },
     },
