@@ -138,51 +138,6 @@ const projectCommonAggregation = (req) => {
               ],
             },
           },
-          // ✅ Add computed fields for task progress
-          {
-            $addFields: {
-              subtaskCount: { $size: "$subTasks" },
-              completedSubtaskCount: {
-                $size: {
-                  $filter: {
-                    input: "$subTasks",
-                    as: "subtask",
-                    cond: "$$subtask.isCompleted",
-                  },
-                },
-              },
-              progress: {
-                $cond: [
-                  { $eq: [{ $size: "$subTasks" }, 0] },
-                  0,
-                  {
-                    $round: [
-                      {
-                        $multiply: [
-                          {
-                            $divide: [
-                              {
-                                $size: {
-                                  $filter: {
-                                    input: "$subTasks",
-                                    as: "subtask",
-                                    cond: "$$subtask.isCompleted",
-                                  },
-                                },
-                              },
-                              { $size: "$subTasks" },
-                            ],
-                          },
-                          100,
-                        ],
-                      },
-                      2,
-                    ],
-                  },
-                ],
-              },
-            },
-          },
           {
             $sort: { createdAt: -1 },
           },
