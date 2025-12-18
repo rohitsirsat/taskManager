@@ -2,16 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Plus,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Clock,
-  FolderOpen,
-  Users,
-  Loader2,
-} from "lucide-react";
+import { Trash2, Clock, FolderOpen, Users, Loader2 } from "lucide-react";
 import {
   Empty,
   EmptyContent,
@@ -20,14 +11,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useProject } from "@/context/ProjectContext..jsx";
 import { Loader } from "@/components/Loader";
-import CreateProjectForm from "@/components/CreateProjectForm";
 import { useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "sonner";
+import ProjectComponent from "@/components/ProjectComponent";
+import { useNavigate } from "react-router-dom";
+import { useProject } from "@/context/ProjectContext";
+
 dayjs.extend(relativeTime);
 
 export default function HomePage() {
@@ -41,15 +33,20 @@ export default function HomePage() {
     hasNextPage,
     totalProjects,
     deleteExistingProject,
+    updateExistingProject,
+    fetchProjectById,
   } = useProject();
-  const [editingProject, setEditingProject] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleEditClick = (project) => {
-    setEditingProject(project);
-    setIsEditDialogOpen(true);
+  const navigate = useNavigate();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleProjectClick = async (projectId) => {
+    try {
+      const getProjectDashBoard = await fetchProjectById(projectId);
+    } catch (error) {
+      console.log("ERR IN HOME: ", error);
+    }
   };
 
   const handleCreateSubmit = async (formData) => {
@@ -65,16 +62,13 @@ export default function HomePage() {
       console.error("Error creating project:", err);
     } finally {
       setIsSubmitting(false);
-      setIsCreateDialogOpen(false);
     }
   };
 
-  const handleEditSubmit = async (formData) => {
+  const handleEditSubmit = async (projectId, formData) => {
     setIsSubmitting(true);
     try {
-      // TODO: call updateProject API
-      // await updateProject(editingProject._id, formData);
-      console.log("Update payload for", editingProject?._id, formData);
+      await updateExistingProject(projectId, formData);
 
       // refresh projects list
       if (typeof fetchAllProjects === "function") {
@@ -84,8 +78,6 @@ export default function HomePage() {
       console.error("Error updating project:", err);
     } finally {
       setIsSubmitting(false);
-      setIsEditDialogOpen(false);
-      setEditingProject(null);
     }
   };
 
@@ -102,7 +94,7 @@ export default function HomePage() {
     try {
       await loadMoreProjects();
     } catch (error) {
-      console.error("Load more error:", e);
+      console.error("Load more error:", error);
     }
   };
 
@@ -124,25 +116,14 @@ export default function HomePage() {
           </EmptyHeader>
           <EmptyContent>
             <div className="flex gap-2">
-              <Button
-                onClick={() => setIsCreateDialogOpen(true)}
-                className={"cursor-pointer"}
-              >
-                Create Project
-              </Button>
+              <ProjectComponent
+                onSubmit={handleCreateSubmit}
+                isEdit={false}
+                isLoading={isSubmitting}
+              />
             </div>
           </EmptyContent>
         </Empty>
-
-        {/* Create Project Dialog */}
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <CreateProjectForm
-            onSubmit={handleCreateSubmit}
-            isLoading={isSubmitting}
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-          />
-        </Dialog>
       </div>
     );
   } else {
@@ -160,13 +141,11 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <Button
-                className="rounded-2xl cursor-pointer"
-                onClick={() => setIsCreateDialogOpen(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Project
-              </Button>
+              <ProjectComponent
+                onSubmit={handleCreateSubmit}
+                isEdit={false}
+                isLoading={isSubmitting}
+              />
             </div>
 
             {/* Projects Table */}
@@ -174,12 +153,13 @@ export default function HomePage() {
               <CardHeader>
                 <CardTitle>Recent Projects</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className={"cursor-pointer"}>
                 <div className="space-y-4">
                   {projects.map((project) => (
                     <div
                       key={project._id}
                       className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                      onClick={() => handleProjectClick(project._id)}
                     >
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center space-x-3">
@@ -247,24 +227,20 @@ export default function HomePage() {
 
                         {/* Actions */}
                         <div className="flex items-center space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditClick(project)}
-                            aria-label={`Edit ${project.name}`}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          <ProjectComponent
+                            onSubmit={handleEditSubmit}
+                            isEdit={true}
+                            isLoading={isSubmitting}
+                            project={project}
+                          />
+
                           <Button
                             onClick={() => handleDeleteProject(project._id)}
-                            variant="ghost"
+                            variant="destructive"
                             size="sm"
                             className={"cursor-pointer"}
                           >
                             <Trash2 className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
@@ -294,26 +270,6 @@ export default function HomePage() {
             </div>
           )}
         </main>
-
-        {/* Create Project Dialog */}
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <CreateProjectForm
-            onSubmit={handleCreateSubmit}
-            isLoading={isSubmitting}
-            open={isCreateDialogOpen}
-            onOpenChange={setIsCreateDialogOpen}
-          />
-        </Dialog>
-
-        {/* Edit Project Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <CreateProjectForm
-            onSubmit={handleEditSubmit}
-            isLoading={isSubmitting}
-            open={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
-          />
-        </Dialog>
       </div>
     );
   }
