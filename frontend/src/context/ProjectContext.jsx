@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 const ProjectContext = createContext({
   projects: [],
+  project: [],
   isLoading: true,
   isLoadingMore: false,
   hasNextPage: false,
@@ -35,6 +36,7 @@ const useProject = () => useContext(ProjectContext);
 
 const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
+  const [project, setProject] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -148,9 +150,10 @@ const ProjectProvider = ({ children }) => {
 
       if (response?.data?.success) {
         navigate("/dashboard");
+        setProject(response?.data?.data || {});
       }
 
-      return response;
+      return response.data;
     } catch (error) {
       console.log("PROJECT BY ID error: ", error.message);
       toast.error("Failed to load project. Check permissions.");
@@ -164,6 +167,7 @@ const ProjectProvider = ({ children }) => {
     <ProjectContext.Provider
       value={{
         projects,
+        project,
         hasNextPage,
         currentPage,
         totalPages,
