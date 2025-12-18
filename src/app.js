@@ -8,6 +8,7 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -28,6 +29,7 @@ app.use(cookieParser());
 
 // import routes
 import healthCheckRouter from "./routes/healthCheck.routes.js";
+
 import authRouter from "./routes/auth.routes.js";
 import noteRouter from "./routes/note.routes.js";
 import projectRouter from "./routes/project.routes.js";
