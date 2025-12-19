@@ -11,25 +11,9 @@ import { getMongoosePaginationOptions } from "../utils/helpers.js";
 const projectCommonAggregation = (req) => {
   return [
     {
-      $lookup: {
-        from: "users",
-        localField: "createdBy",
-        foreignField: "_id",
-        as: "createdBy",
-        pipeline: [
-          {
-            $project: {
-              _id: 1,
-              username: 1,
-              avatar: 1,
-              email: 1,
-            },
-          },
-        ],
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(req.user._id),
       },
-    },
-    {
-      $unwind: "$createdBy",
     },
     {
       $lookup: {
@@ -62,7 +46,6 @@ const projectCommonAggregation = (req) => {
         ],
       },
     },
-    // ✅ FIXED: Properly aggregate tasks with user lookups
     {
       $lookup: {
         from: "tasks",
@@ -118,7 +101,6 @@ const projectCommonAggregation = (req) => {
               preserveNullAndEmptyArrays: true,
             },
           },
-          // ✅ Lookup subtasks
           {
             $lookup: {
               from: "subtasks",
@@ -146,10 +128,15 @@ const projectCommonAggregation = (req) => {
     },
     {
       $lookup: {
-        from: "projectnote",
+        from: "projectnotes",
         localField: "_id",
         foreignField: "project",
         as: "projectNotes",
+      },
+    },
+    {
+      $addFields: {
+        memberCount: { $size: "$projectMembers" },
       },
     },
   ];
