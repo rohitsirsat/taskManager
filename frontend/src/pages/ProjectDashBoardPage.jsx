@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import KanbanBoard from "@/components/KanbanBoard";
 import Navigation from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,6 @@ export default function ProjectDashBoardPage() {
   const [showAddTask, setShowAddTask] = useState(false);
 
   const { project } = useProject();
-
-  console.log("SINGLE PROJECT: ", project);
 
   return (
     <main className="bg-background">

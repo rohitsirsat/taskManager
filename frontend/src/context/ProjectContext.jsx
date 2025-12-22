@@ -146,7 +146,6 @@ const ProjectProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await getProjectById(projectId);
-      console.log("PROJECT BY ID: ", response.data);
 
       if (response?.data?.success) {
         navigate("/dashboard");
