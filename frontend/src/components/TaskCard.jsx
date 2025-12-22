@@ -1,4 +1,4 @@
-import { Calendar, Flag, Tag, User, FileText } from "lucide-react";
+import { Calendar, Flag, FileText } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
